@@ -99,6 +99,206 @@
       100% { opacity: 0; transform: translate3d(var(--sway), 108vh, 0) rotate(240deg); }
     }
 
+    .nut-confetti {
+      position: fixed;
+      top: -35px;
+      pointer-events: none;
+      z-index: 110;
+      will-change: transform, opacity;
+      animation: nutFall linear forwards;
+    }
+
+    @keyframes nutFall {
+      0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7); }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { opacity: 0; transform: translate3d(var(--sway), 108vh, 0) rotate(var(--spin)) scale(1.1); }
+    }
+
+    /* Аккуратные прыгающие мем-картинки под экран телефона */
+    .meme-popup {
+      position: fixed;
+      width: clamp(76px, 21vw, 108px);
+      height: clamp(76px, 21vw, 108px);
+      object-fit: cover;
+      border-radius: 15px;
+      border: 2px solid #ffd43b;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.85), 0 0 14px rgba(255, 212, 59, 0.45);
+      z-index: 105;
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation:
+        memePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+        memeJump 0.65s ease-in-out infinite alternate 0.45s;
+    }
+
+    body.disco-mode .meme-popup {
+      border-color: #ff2e93;
+      box-shadow: 0 0 20px rgba(255, 46, 147, 0.7), 0 0 30px rgba(0, 245, 212, 0.4);
+      animation:
+        memePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+        memeJump 0.34s ease-in-out infinite alternate;
+    }
+
+    .meme-popup.hiding {
+      animation: memeFadeOut 0.35s ease forwards !important;
+    }
+
+    @keyframes memePop {
+      0%   { opacity: 0; transform: scale(0.2) rotate(0deg); }
+      100% { opacity: 1; transform: scale(1) rotate(var(--rot)); }
+    }
+
+    @keyframes memeJump {
+      0%   { transform: translate3d(0, 0, 0) scale(1) rotate(var(--rot)); }
+      100% { transform: translate3d(0, -14px, 0) scale(1.06) rotate(calc(var(--rot) * -0.7)); }
+    }
+
+    @keyframes memeFadeOut {
+      to { opacity: 0; transform: scale(0.3) translateY(15px); }
+    }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Цветы для Лизы</title>
+  <style>
+    :root {
+      --bg-glow: #201830;
+      --accent: #ff70b8;
+      --accent-soft: rgba(255, 110, 180, 0.14);
+      --accent-border: rgba(255, 110, 180, 0.4);
+      --grad-name: linear-gradient(90deg, #ffffff, #ff85c0, #ffd43b, #ffffff);
+      --grad-bar: linear-gradient(90deg, #ff70b8, #ffd43b, #c084fc);
+    }
+
+    body.theme-purple {
+      --bg-glow: #1b1438;
+      --accent: #c084fc;
+      --accent-soft: rgba(192, 132, 252, 0.14);
+      --accent-border: rgba(192, 132, 252, 0.42);
+      --grad-name: linear-gradient(90deg, #ffffff, #c084fc, #818cf8, #ffffff);
+      --grad-bar: linear-gradient(90deg, #c084fc, #818cf8, #ff70b8);
+    }
+
+    body.theme-gold {
+      --bg-glow: #292012;
+      --accent: #ffd43b;
+      --accent-soft: rgba(255, 212, 59, 0.14);
+      --accent-border: rgba(255, 212, 59, 0.42);
+      --grad-name: linear-gradient(90deg, #ffffff, #ffd43b, #ff922b, #ffffff);
+      --grad-bar: linear-gradient(90deg, #ffd43b, #ff922b, #ff70b8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 50% 25%, var(--bg-glow) 0%, #09090d 85%);
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: background 0.5s ease;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 8px 26px;
+      text-align: center;
+      perspective: 1000px;
+    }
+
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      top: -20px;
+      font-family: "Courier New", monospace;
+      opacity: 0.3;
+      will-change: transform;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      from { transform: translate3d(0, 0, 0); }
+      to   { transform: translate3d(0, 105vh, 0); }
+    }
+
+    .rain-heart {
+      position: fixed;
+      top: -30px;
+      pointer-events: none;
+      font-family: "Courier New", monospace;
+      font-weight: 800;
+      z-index: 100;
+      will-change: transform, opacity;
+      text-shadow: 0 0 8px currentColor;
+      animation: rainDrop linear forwards;
+    }
+
+    @keyframes rainDrop {
+      0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+      15%  { opacity: 1; }
+      90%  { opacity: 0.9; }
+      100% { opacity: 0; transform: translate3d(var(--sway), 108vh, 0) rotate(240deg); }
+    }
+
+    .nut-confetti {
+      position: fixed;
+      top: -35px;
+      pointer-events: none;
+      z-index: 110;
+      will-change: transform, opacity;
+      animation: nutFall linear forwards;
+    }
+
+    @keyframes nutFall {
+      0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7); }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { opacity: 0; transform: translate3d(var(--sway), 108vh, 0) rotate(var(--spin)) scale(1.1); }
+    }
+
+    .meme-popup {
+      position: fixed;
+      width: 112px;
+      height: 112px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 2px solid #ffd43b;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85), 0 0 15px rgba(255, 212, 59, 0.45);
+      z-index: 105;
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation: memePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .meme-popup.hiding { animation: memeFadeOut 0.35s ease forwards; }
+
+    @keyframes memePop {
+      0%   { opacity: 0; transform: scale(0.2) rotate(0deg); }
+      100% { opacity: 1; transform: scale(1) rotate(var(--rot)); }
+    }
+
+    @keyframes memeFadeOut {
+      to { opacity: 0; transform: scale(0.4) rotate(0deg); }
+    }
+
     .tap-heart {
       position: fixed;
       pointer-events: none;
@@ -114,6 +314,70 @@
       0%   { opacity: 1; transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg); }
       60%  { opacity: 0.95; }
       100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) scale(1.25) rotate(var(--rot)); }
+    }
+    .disco-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 95;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      overflow: hidden;
+    }
+
+    body.disco-mode .disco-overlay { opacity: 1; }
+
+    .disco-strobe {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, transparent 45%, rgba(255, 0, 128, 0.28) 100%);
+      animation: strobeFlash 0.45s infinite alternate;
+    }
+
+    @keyframes strobeFlash {
+      0%   { filter: hue-rotate(0deg); opacity: 0.45; }
+      50%  { filter: hue-rotate(140deg); opacity: 0.95; }
+      100% { filter: hue-rotate(280deg); opacity: 0.55; }
+    }
+
+    .laser {
+      position: absolute;
+      top: -10%;
+      width: 3px;
+      height: 130vh;
+      transform-origin: top center;
+      opacity: 0.85;
+      box-shadow: 0 0 12px currentColor, 0 0 24px currentColor;
+    }
+
+    .laser.l1 { left: 15%; color: #ff2e93; background: #ff2e93; animation: sweep1 1.6s ease-in-out infinite alternate; }
+    .laser.l2 { left: 50%; color: #00f5d4; background: #00f5d4; animation: sweep2 1.2s ease-in-out infinite alternate; }
+    .laser.l3 { left: 85%; color: #ffd43b; background: #ffd43b; animation: sweep3 1.5s ease-in-out infinite alternate; }
+    .laser.l4 { left: 32%; color: #c084fc; background: #c084fc; animation: sweep2 1.8s ease-in-out infinite alternate-reverse; }
+    .laser.l5 { left: 68%; color: #ff4757; background: #ff4757; animation: sweep1 1.3s ease-in-out infinite alternate-reverse; }
+
+    @keyframes sweep1 {
+      from { transform: rotate(-32deg); }
+      to   { transform: rotate(28deg); }
+    }
+    @keyframes sweep2 {
+      from { transform: rotate(25deg); }
+      to   { transform: rotate(-28deg); }
+    }
+    @keyframes sweep3 {
+      from { transform: rotate(-22deg); }
+      to   { transform: rotate(34deg); }
+    }
+
+    body.disco-mode .main-window {
+      animation: discoBounce 0.42s ease-in-out infinite alternate;
+      border-color: #ffd43b;
+      box-shadow: 0 0 35px rgba(255, 46, 147, 0.55), 0 0 60px rgba(0, 245, 212, 0.3);
+    }
+
+    @keyframes discoBounce {
+      from { transform: scale(0.99); }
+      to   { transform: scale(1.025); }
     }
 
     .main-window {
@@ -146,9 +410,7 @@
       z-index: 1;
     }
 
-    .main-window.tilting .card-glare {
-      opacity: 1;
-    }
+    .main-window.tilting .card-glare { opacity: 1; }
 
     .window-top-bar {
       position: relative;
@@ -208,6 +470,7 @@
       margin-left: 2px;
     }
     .rain-trigger:active { transform: scale(0.92); }
+
     .bouquet-wrap {
       position: relative;
       z-index: 2;
@@ -281,7 +544,6 @@
     body.theme-gold .dpink  { color: #ffd43b; }
     body.theme-gold .lpink  { color: #fef08a; }
     body.theme-gold .ribbon { color: #fbbf24; }
-
     .subtitle {
       position: relative;
       z-index: 2;
@@ -318,9 +580,17 @@
       to { background-position: 200% center; }
     }
 
-    .note-btn {
+    .action-row {
       position: relative;
       z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .note-btn, .meme-btn {
       background: var(--accent-soft);
       border: 1px solid var(--accent-border);
       color: #f8fafc;
@@ -329,10 +599,21 @@
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
-      margin-bottom: 12px;
-      transition: background-color 0.25s ease, transform 0.2s ease;
+      transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
     }
-    .note-btn:active { transform: scale(0.96); }
+
+    .meme-btn {
+      background: rgba(255, 212, 59, 0.14);
+      border-color: rgba(255, 212, 59, 0.45);
+      color: #fef08a;
+    }
+
+    .meme-btn.active {
+      background: rgba(255, 212, 59, 0.28);
+      box-shadow: 0 0 12px rgba(255, 212, 59, 0.4);
+    }
+
+    .note-btn:active, .meme-btn:active { transform: scale(0.95); }
 
     .secret-note {
       position: relative;
@@ -532,7 +813,10 @@
   <div class="name">Лиза</div>
   <div class="wish">Тебе</div>
 
-  <button class="note-btn" id="noteBtn">✉ Открыть записку</button>
+  <div class="action-row">
+    <button class="note-btn" id="noteBtn">✉ Записка</button>
+    <button class="meme-btn" id="memeBtn">🥜 Мем</button>
+  </div>
   <div class="secret-note" id="secretNote"></div>
 
   <div class="player-box" id="playerBox">
@@ -563,6 +847,7 @@
     </div>
 
     <audio id="bgMusic" src="cabbage.mp3" preload="auto"></audio>
+    <audio id="epicMusic" src="epic.mp3" preload="auto"></audio>
   </div>
 </div>
 <script>
@@ -642,7 +927,154 @@
       div.classList.add("visible");
     }, (totalLines - idx) * 24);
   });
-  // === 1. 3D-НАКЛОН ГОЛОГРАФИЧЕСКОЙ ОТКРЫТКИ ===
+  const discoOverlay = document.createElement("div");
+  discoOverlay.className = "disco-overlay";
+  discoOverlay.innerHTML = `
+    <div class="disco-strobe"></div>
+    <div class="laser l1"></div>
+    <div class="laser l2"></div>
+    <div class="laser l3"></div>
+    <div class="laser l4"></div>
+    <div class="laser l5"></div>
+  `;
+  document.body.appendChild(discoOverlay);
+
+  const memeBtn = document.getElementById("memeBtn");
+  const epicMusic = document.getElementById("epicMusic");
+  let activeMemeElements = [];
+  let nutInterval = null;
+  let fallbackTimer = null;
+  let isMemeActive = false;
+  let isDiscoActive = false;
+
+  function spawnSingleNut(intense) {
+    const nutSymbols = intense ? ["🥜", "✨", "🥜", "⚡", "🥜"] : ["🥜", "🥜", "✨"];
+    const nut = document.createElement("span");
+    nut.className = "nut-confetti";
+    nut.textContent = nutSymbols.at(Math.floor(Math.random() * nutSymbols.length));
+    nut.style.fontSize = (intense ? 18 + Math.random() * 10 : 15 + Math.random() * 7).toFixed(0) + "px";
+    nut.style.left = (Math.random() * 94 + 2).toFixed(1) + "vw";
+    nut.style.setProperty("--sway", (Math.random() * 90 - 45).toFixed(0) + "px");
+    nut.style.setProperty("--spin", (360 + Math.floor(Math.random() * 540)) + "deg");
+    const dur = (intense ? 1.4 + Math.random() * 0.9 : 2.1 + Math.random() * 1.1).toFixed(2);
+    nut.style.animationDuration = dur + "s";
+    document.body.appendChild(nut);
+    setTimeout(() => nut.remove(), parseFloat(dur) * 1000 + 100);
+  }
+
+  function startNutStream(intense = false) {
+    if (nutInterval) clearInterval(nutInterval);
+    for (let i = 0; i < 10; i++) spawnSingleNut(intense);
+    nutInterval = setInterval(() => {
+      if (!isMemeActive) return;
+      spawnSingleNut(isDiscoActive);
+      if (isDiscoActive) spawnSingleNut(true);
+    }, intense ? 110 : 210);
+  }
+
+  function loadSmartMemeImage(baseName, imgEl) {
+    const candidates = [
+      `memes/${baseName}.jpg`,
+      `memes/${baseName}.jpeg`,
+      `memes/${baseName}.png`,
+      `memes/${baseName}.JPG`,
+      `memes/${baseName}.PNG`,
+      `${baseName}.jpg`,
+      `${baseName}.jpeg`,
+      `${baseName}.png`
+    ];
+    let idx = 0;
+    function tryNext() {
+      if (idx >= candidates.length) {
+        imgEl.remove();
+        return;
+      }
+      imgEl.src = candidates.at(idx);
+      idx++;
+    }
+    imgEl.onerror = tryNext;
+    tryNext();
+  }
+
+  function clearMemes() {
+    isMemeActive = false;
+    isDiscoActive = false;
+    document.body.classList.remove("disco-mode");
+    memeBtn.classList.remove("active");
+    epicMusic.pause();
+    epicMusic.currentTime = 0;
+    if (nutInterval) clearInterval(nutInterval);
+    if (fallbackTimer) clearTimeout(fallbackTimer);
+
+    activeMemeElements.forEach(img => {
+      img.classList.add("hiding");
+      setTimeout(() => img.remove(), 360);
+    });
+    activeMemeElements = [];
+  }
+
+  function showMemes() {
+    if (isPlaying) {
+      audio.pause();
+      setPlayingState(false);
+    }
+
+    clearMemes();
+    isMemeActive = true;
+    memeBtn.classList.add("active");
+
+    startNutStream(false);
+
+    epicMusic.play().catch(() => {
+      fallbackTimer = setTimeout(clearMemes, 18000);
+    });
+
+const spots = [
+      { top: "5%", left: "3.5%", rot: "-8deg" },
+      { top: "6%", right: "3.5%", rot: "9deg" },
+      { bottom: "5%", left: "3.5%", rot: "7deg" },
+      { bottom: "6%", right: "3.5%", rot: "-8deg" },
+      { top: "24%", left: "2.5%", rot: "-6deg" },
+      { top: "25%", right: "2.5%", rot: "6deg" }
+    ];
+
+    const baseNames = ["meme1", "meme2", "meme3", "meme4"];
+    baseNames.forEach((baseName, idx) => {
+      const spot = spots.at(idx % spots.length);
+      const img = document.createElement("img");
+      img.className = "meme-popup";
+      img.style.setProperty("--rot", spot.rot);
+      if (spot.top) img.style.top = spot.top;
+      if (spot.bottom) img.style.bottom = spot.bottom;
+      if (spot.left) img.style.left = spot.left;
+      if (spot.right) img.style.right = spot.right;
+      img.style.animationDelay = (idx * 0.14).toFixed(2) + "s";
+
+      loadSmartMemeImage(baseName, img);
+      document.body.appendChild(img);
+      activeMemeElements.push(img);
+    });
+  }
+
+  epicMusic.addEventListener("timeupdate", () => {
+    if (!isMemeActive) return;
+    if (epicMusic.currentTime >= 15 && !isDiscoActive) {
+      isDiscoActive = true;
+      document.body.classList.add("disco-mode");
+      startNutStream(true);
+    }
+  });
+
+  memeBtn.addEventListener("click", () => {
+    requestIOSMotion();
+    if (!isMemeActive) {
+      showMemes();
+    } else {
+      clearMemes();
+    }
+  });
+
+  epicMusic.addEventListener("ended", clearMemes);
   const mainWindow = document.getElementById("mainWindow");
   const cardGlare = document.getElementById("cardGlare");
 
@@ -676,7 +1108,6 @@
   }, { passive: true });
   mainWindow.addEventListener("touchend", resetTilt);
 
-  // === 2. ПЕРЕКЛЮЧАТЕЛЬ ЦВЕТОВЫХ ТЕМ ===
   const themeDots = document.querySelectorAll(".theme-dot");
   themeDots.forEach(dot => {
     dot.addEventListener("click", () => {
@@ -690,7 +1121,6 @@
     });
   });
 
-  // === 3. ДОЖДЬ ИЗ СЕРДЕЧЕК ПРИ ВСТРЯХИВАНИИ (IPHONE + ANDROID) ===
   const heartSymbols = ["♥", "✦", "<3", "❀", "♥", "✧", "♥"];
   const heartColors = ["#ff6eb4", "#ffd43b", "#ff4757", "#c084fc", "#55efc4"];
   let lastRainTime = 0;
@@ -751,7 +1181,6 @@
     lastZ = acc.z;
   }, { passive: true });
 
-  // === 4. ВЕЕРНЫЕ СЕРДЕЧКИ ПРИ НАЖАТИИ НА БУКЕТ ===
   const bouquetWrap = document.getElementById("bouquetWrap");
   bouquetWrap.addEventListener("click", (e) => {
     requestIOSMotion();
@@ -788,7 +1217,6 @@
     }
   });
 
-  // === 5. ДРУЖЕСКАЯ СЕКРЕТНАЯ ЗАПИСКА ===
   const secretMessage = "Лиза, лови цифровой букет, который точно не завянет! Спасибо за крутой вайб и настроение, оставайся такой же классной ✨";
   const noteBtn = document.getElementById("noteBtn");
   const secretNote = document.getElementById("secretNote");
@@ -799,7 +1227,7 @@
     requestIOSMotion();
     noteOpen = !noteOpen;
     if (noteOpen) {
-      noteBtn.textContent = "✕ Закрыть записку";
+      noteBtn.textContent = "✕ Закрыть";
       secretNote.classList.add("open");
       secretNote.textContent = "";
       let idx = 0;
@@ -813,13 +1241,12 @@
         }
       }, 28);
     } else {
-      noteBtn.textContent = "✉ Открыть записку";
+      noteBtn.textContent = "✉ Записка";
       secretNote.classList.remove("open");
       if (typeTimer) clearInterval(typeTimer);
     }
   });
 
-  // === 6. ПЛЕЕР С 60 FPS ПОЛОСКОЙ И СКРЫТИЕМ ДО НАЖАТИЯ ===
   const lyricLines = document.querySelectorAll(".lyric-line");
   const audio = document.getElementById("bgMusic");
   const playBtn = document.getElementById("playBtn");
@@ -893,6 +1320,7 @@
   playBtn.addEventListener("click", () => {
     requestIOSMotion();
     if (!isPlaying) {
+      if (isMemeActive) clearMemes();
       audio.play().then(() => {
         setPlayingState(true);
       }).catch(() => {
