@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Цветы для Лизы</title>
+  <style>
+    :root {
+      --bg-glow: #201830;
+      --accent: #ff70b8;
+      --accent-soft: rgba(255, 110, 180, 0.14);
+      --accent-border: rgba(255, 110, 180, 0.4);
+      --grad-name: linear-gradient(90deg, #ffffff, #ff85c0, #ffd43b, #ffffff);
+      --grad-bar: linear-gradient(90deg, #ff70b8, #ffd43b, #c084fc);
+    }
+
+    body.theme-purple {
+      --bg-glow: #1b1438;
+      --accent: #c084fc;
+      --accent-soft: rgba(192, 132, 252, 0.14);
+      --accent-border: rgba(192, 132, 252, 0.42);
+      --grad-name: linear-gradient(90deg, #ffffff, #c084fc, #818cf8, #ffffff);
+      --grad-bar: linear-gradient(90deg, #c084fc, #818cf8, #ff70b8);
+    }
+
+    body.theme-gold {
+      --bg-glow: #292012;
+      --accent: #ffd43b;
+      --accent-soft: rgba(255, 212, 59, 0.14);
+      --accent-border: rgba(255, 212, 59, 0.42);
+      --grad-name: linear-gradient(90deg, #ffffff, #ffd43b, #ff922b, #ffffff);
+      --grad-bar: linear-gradient(90deg, #ffd43b, #ff922b, #ff70b8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 50% 25%, var(--bg-glow) 0%, #09090d 85%);
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: background 0.5s ease;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 8px 26px;
+      text-align: center;
+      perspective: 1000px;
+    }
+
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      top: -20px;
+      font-family: "Courier New", monospace;
+      opacity: 0.3;
+      will-change: transform;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      from { transform: translate3d(0, 0, 0); }
+      to   { transform: translate3d(0, 105vh, 0); }
+    }
+
+    .rain-heart {
+      position: fixed;
+      top: -30px;
+      pointer-events: none;
+      font-family: "Courier New", monospace;
+      font-weight: 800;
+      z-index: 100;
+      will-change: transform, opacity;
+      text-shadow: 0 0 8px currentColor;
+      animation: rainDrop linear forwards;
+    }
+
+    @keyframes rainDrop {
+      0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+      15%  { opacity: 1; }
+      90%  { opacity: 0.9; }
+      100% { opacity: 0; transform: translate3d(var(--sway), 108vh, 0) rotate(240deg); }
+    }
+
+    .tap-heart {
+      position: fixed;
+      pointer-events: none;
+      font-family: "Courier New", monospace;
+      font-weight: 800;
+      z-index: 99;
+      will-change: transform, opacity;
+      text-shadow: 0 0 8px currentColor;
+      animation: burstHeart 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes burstHeart {
+      0%   { opacity: 1; transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg); }
+      60%  { opacity: 0.95; }
+      100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) scale(1.25) rotate(var(--rot)); }
+    }
+
+    .main-window {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      background: rgba(17, 16, 25, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 26px;
+      padding: 14px 6px 18px;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.18s ease-out;
+    }
+
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 255, 255, 0.08), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .main-window.tilting .card-glare {
+      opacity: 1;
+    }
+
+    .window-top-bar {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      margin-bottom: 6px;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+      opacity: 0.75;
+    }
+    .window-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .window-dots span:nth-child(1) { background: #ff5f56; }
+    .window-dots span:nth-child(2) { background: #ffbd2e; }
+    .window-dots span:nth-child(3) { background: #27c93f; }
+
+    .theme-switcher {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .theme-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .theme-dot.active {
+      transform: scale(1.22);
+      border-color: #ffffff;
+    }
+    .theme-dot[data-theme="pink"]   { background: #ff70b8; }
+    .theme-dot[data-theme="purple"] { background: #c084fc; }
+    .theme-dot[data-theme="gold"]   { background: #ffd43b; }
+
+    .rain-trigger {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 10px;
+      cursor: pointer;
+      margin-left: 2px;
+    }
+    .rain-trigger:active { transform: scale(0.92); }
+    .bouquet-wrap {
+      position: relative;
+      z-index: 2;
+      margin: 2px auto 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+    }
+
+    .bouquet-wrap.pulse {
+      transform: scale(1.045);
+      filter: brightness(1.4);
+    }
+
+    .bouquet {
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 800;
+      font-size: clamp(5.5px, 1.8vw, 9.2px);
+      line-height: 1.02;
+      white-space: pre;
+      letter-spacing: 0px;
+      user-select: none;
+      will-change: transform;
+      animation: gentleFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50%      { transform: translate3d(0, -3px, 0); }
+    }
+
+    .b-line {
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .b-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .seg { animation: softGlow 2.8s ease-in-out infinite; }
+
+    @keyframes softGlow {
+      0%, 100% { opacity: 0.85; }
+      50%      { opacity: 1; }
+    }
+
+    .pink   { color: #ff6eb4; }
+    .lpink  { color: #ffb3d9; }
+    .dpink  { color: #ff2e93; }
+    .yellow { color: #ffd43b; }
+    .orange { color: #ff922b; }
+    .white  { color: #ffffff; }
+    .red    { color: #ff4757; }
+    .dred   { color: #d63031; }
+    .purple { color: #c084fc; }
+    .green  { color: #7bed9f; }
+    .dgreen { color: #2ed573; }
+    .mint   { color: #55efc4; }
+    .stem   { color: #dfe6e9; }
+    .ribbon { color: #ff85a1; }
+
+    body.theme-purple .pink,
+    body.theme-purple .dpink  { color: #c084fc; }
+    body.theme-purple .lpink  { color: #e9d5ff; }
+    body.theme-purple .ribbon { color: #a78bfa; }
+
+    body.theme-gold .pink,
+    body.theme-gold .dpink  { color: #ffd43b; }
+    body.theme-gold .lpink  { color: #fef08a; }
+    body.theme-gold .ribbon { color: #fbbf24; }
+
+    .subtitle {
+      position: relative;
+      z-index: 2;
+      font-size: 9.5px;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      color: #8f9bb3;
+      margin-bottom: 3px;
+    }
+
+    .name {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(28px, 7.8vw, 36px);
+      font-weight: 800;
+      background: var(--grad-name);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+      letter-spacing: 1.2px;
+      animation: shine 5s linear infinite;
+    }
+
+    .wish {
+      position: relative;
+      z-index: 2;
+      font-size: 14px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .note-btn {
+      position: relative;
+      z-index: 2;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 5px 13px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: background-color 0.25s ease, transform 0.2s ease;
+    }
+    .note-btn:active { transform: scale(0.96); }
+
+    .secret-note {
+      position: relative;
+      z-index: 2;
+      width: calc(100% - 12px);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      border-radius: 16px;
+      margin-bottom: 0;
+      padding: 0 14px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #f1f5f9;
+      text-align: center;
+      transition: max-height 0.4s ease, opacity 0.35s ease, padding 0.35s ease, margin-bottom 0.35s ease;
+    }
+
+    .secret-note.open {
+      max-height: 140px;
+      opacity: 1;
+      padding: 11px 14px;
+      margin-bottom: 12px;
+    }
+
+    .player-box {
+      position: relative;
+      z-index: 2;
+      width: calc(100% - 12px);
+      background: #0d0d13;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 12px 13px;
+      transition: border-color 0.35s ease;
+    }
+
+    .player-box.active-music { border-color: var(--accent-border); }
+
+    .track-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .track-meta {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .eq {
+      display: flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 15px;
+      width: 15px;
+      flex-shrink: 0;
+    }
+    .eq span {
+      width: 3px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .eq.playing span:nth-child(1) { animation: eqAnim 0.55s ease-in-out infinite alternate; }
+    .eq.playing span:nth-child(2) { animation: eqAnim 0.38s ease-in-out infinite alternate 0.2s; }
+    .eq.playing span:nth-child(3) { animation: eqAnim 0.65s ease-in-out infinite alternate 0.1s; }
+
+    @keyframes eqAnim {
+      from { height: 4px; }
+      to   { height: 15px; }
+    }
+
+    .track-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 11px;
+      color: #8f9bb3;
+    }
+
+    .play-btn {
+      background: var(--grad-bar);
+      color: #111;
+      border: none;
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .play-btn:active { transform: scale(0.95); }
+
+    .hidden-song-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      margin-top: 0;
+      transition: max-height 0.45s ease, opacity 0.35s ease, margin-top 0.35s ease;
+    }
+
+    .player-box.active-music .hidden-song-content {
+      max-height: 220px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--grad-bar);
+      border-radius: 4px;
+      transform: scaleX(0);
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    .lyrics-frame {
+      border-radius: 14px;
+      padding: 10px 11px;
+      background: var(--accent-soft);
+      border: 1.5px solid var(--accent);
+      animation: borderCycle 3s linear infinite;
+      text-align: left;
+    }
+
+    @keyframes borderCycle {
+      0%, 100% { border-color: #ff70b8; }
+      33%      { border-color: #ffd43b; }
+      66%      { border-color: #c084fc; }
+    }
+
+    .lyric-line {
+      font-family: "Courier New", monospace;
+      font-size: clamp(10.5px, 2.95vw, 12px);
+      line-height: 1.55;
+      color: #a9b4c7;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .lyric-line.active {
+      color: #ffffff;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.12);
+      border-left: 2.5px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div class="main-window" id="mainWindow">
+  <div class="card-glare" id="cardGlare"></div>
+
+  <div class="window-top-bar">
+    <div class="window-dots">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="theme-switcher">
+      <button class="theme-dot active" data-theme="pink" title="Розовый закат"></button>
+      <button class="theme-dot" data-theme="purple" title="Ночной фиолет"></button>
+      <button class="theme-dot" data-theme="gold" title="Золотой неон"></button>
+      <button class="rain-trigger" id="rainBtn" title="Дождь из сердечек">♥</button>
+    </div>
+  </div>
+
+  <div class="bouquet-wrap" id="bouquetWrap" title="Нажми на букет">
+    <div class="bouquet" id="bouquet"></div>
+  </div>
+
+  <div class="subtitle">Цветы, которые не завянут</div>
+  <div class="name">Лиза</div>
+  <div class="wish">Тебе</div>
+
+  <button class="note-btn" id="noteBtn">✉ Открыть записку</button>
+  <div class="secret-note" id="secretNote"></div>
+
+  <div class="player-box" id="playerBox">
+    <div class="track-top">
+      <div class="track-meta">
+        <div class="eq" id="eqBars">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <div class="track-title" id="trackTitle">Секретный трек</div>
+          <div class="track-artist" id="trackArtist">Нажми, чтобы включить</div>
+        </div>
+      </div>
+      <button class="play-btn" id="playBtn">▶ Включить</button>
+    </div>
+
+    <div class="hidden-song-content" id="songContent">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="lyrics-frame" id="lyricsFrame">
+        <div class="lyric-line active">«У меня есть эти деньги — капуста</div>
+        <div class="lyric-line">Во мне щас пусто, очень-очень грустно</div>
+        <div class="lyric-line">Где мои чувства? Я потерял их вкус, да</div>
+        <div class="lyric-line">Влаги так много — я водопад...»</div>
+      </div>
+    </div>
+
+    <audio id="bgMusic" src="cabbage.mp3" preload="auto"></audio>
+  </div>
+</div>
+<script>
+  const bouquetLines = [
+    "                       {white:.--101010--.}                        ",
+    "                   {white:.--'}{white:010}{yellow:80808}{white:010}{white:'--.}                    ",
+    "            {pink:.--101--}{white::}{white:0101}{yellow:8080808}{white:1010}{white::}                    ",
+    "         {pink:.--'}{pink:0101010}{pink:'-}{white:'--..}{yellow:808}{white:..--'}    {red:.--101010--.}      ",
+    "       {pink:.--'}{pink:01010101010}{pink:'-.}   {dgreen:111}     {red:.--'}{red:01010101010}{red:'--.}    ",
+    "      {pink::}{pink:0101010}{yellow:80808}{pink:0101010}{pink::}  {dgreen:111}    {red::}{red:0101010}{dred:80808}{red:0101010}{red::}   ",
+    "      {pink::}{pink:010101}{yellow:8080808}{pink:101010}{pink::} {lpink:.--10101--.} {red::}{red:010101}{dred:8080808}{red:101010}{red::}   ",
+    "       {pink:'--..}{pink:010101010}{pink:..--'}{lpink:.--'}{lpink:010101010}{lpink:'--.} {red:'--..}{red:010101010}{red:..--'}    ",
+    "      {mint:.10.} {dgreen:\\\\\\} {pink:'--101--'} {lpink::}{lpink:01010}{dpink:80808}{lpink:01010}{lpink::} {red:'--101--'} {dgreen:///} {mint:.01.}   ",
+    "    {yellow:.--101--.} {dgreen:\\\\\\}   {lpink::}{lpink:0101}{dpink:8080808}{lpink:1010}{lpink::}   {dgreen:///} {yellow:.--101--.} ",
+    "  {yellow:.--'}{yellow:0101010}{yellow:'--.}  {lpink:'--..}{lpink:010101010}{lpink:..--'}{purple:.--101--.} {yellow:.--'}{yellow:0101010}{yellow:'--.} ",
+    " {yellow::}{yellow:01010}{orange:80808}{yellow:01010}{yellow::}  {lpink:'--1010101--'} {purple:.--'}{purple:0101010}{purple:'--.} {yellow:010}{orange:80808}{yellow:010}{yellow::}",
+    " {yellow::}{yellow:0101}{orange:8080808}{yellow:1010}{yellow::}     {stem:10101}     {purple::}{purple:0101}{yellow:80808}{purple:1010}{purple::}{yellow:'--..}{yellow:010}{yellow:..--'}",
+    "  {yellow:'--..}{yellow:0101010}{yellow:..--'}      {stem:01010}      {purple::}{purple:010}{yellow:8080808}{purple:010}{purple::}  {dgreen:////101}  ",
+    "  {green:\\\\\\\\101} {yellow:'--101--'} {mint:////} {stem:10101} {mint:\\\\\\\\} {purple:'--..}{purple:0101010}{purple:..--'} {green:////0101}  ",
+    "   {green:\\\\\\\\01010}      {mint:1010////} {stem:01010} {mint:\\\\\\\\1010}  {purple:'--101--'} {green:////101010}   ",
+    "    {green:\\\\\\\\1010101}{mint:0101010////}{stem:10101}{mint:\\\\\\\\0101010}{green:1010101////}    ",
+    "     {green:\\\\\\\\01010101010101//}{stem:01010}{mint:\\\\10101010101010////}     ",
+    "      {green:\\\\\\\\1010101010101/}{stem:10101}{mint:\\1010101010101////}      ",
+    "       {green:\\\\\\\\0101010101010}{stem:01010}{green:0101010101010////}       ",
+    "        {green:\\\\\\\\101010101010}{stem:10101}{green:101010101010////}        ",
+    "         {green:\\\\\\\\01010101010}{stem:01010}{green:01010101010////}         ",
+    "          {green:\\\\\\\\1010101010}{stem:10101}{green:1010101010////}          ",
+    "           {green:\\\\\\\\010101010}{stem:01010}{green:010101010////}           ",
+    "            {green:\\\\\\\\10101010}{stem:10101}{green:10101010////}            ",
+    "             {green:\\\\\\\\0101010}{stem:01010}{green:0101010////}             ",
+    "              {green:\\\\\\\\101010}{stem:10101}{green:101010////}              ",
+    "               {green:\\\\\\\\01010}{stem:01010}{green:01010////}               ",
+    "             {ribbon:=======1010101010101010101=======}             ",
+    "            {ribbon:========[}{yellow:80808080808080808}{ribbon:]========}            ",
+    "             {ribbon:=======0101010101010101010=======}             ",
+    "               {ribbon://///1010  1010///} {ribbon:\\\\\\1010  1010\\\\\\\\\\}               ",
+    "              {ribbon://///0101  0101///}   {ribbon:\\\\\\0101  0101\\\\\\\\\\}              ",
+    "             {ribbon:////1010  1010//}       {ribbon:\\\\1010  1010\\\\\\\\}             ",
+    "            {dgreen:101010  010101}           {dgreen:101010  010101}            "
+  ];
+
+  const bouquetEl = document.getElementById("bouquet");
+  const frag = document.createDocumentFragment();
+  const lineDivs = [];
+
+  bouquetLines.forEach((rawLine, lineIdx) => {
+    const lineDiv = document.createElement("div");
+    lineDiv.className = "b-line";
+    const parts = rawLine.split(/(\{[a-z]+:[^}]+\})/g);
+
+    parts.forEach((part, partIdx) => {
+      if (!part) return;
+      const openBrace = part.indexOf("{");
+      const colonIdx = part.indexOf(":");
+      const closeBrace = part.lastIndexOf("}");
+
+      if (openBrace === 0 && colonIdx > 1 && closeBrace === part.length - 1) {
+        const span = document.createElement("span");
+        span.className = "seg " + part.slice(1, colonIdx);
+        span.textContent = part.slice(colonIdx + 1, closeBrace);
+        span.style.animationDelay = ((lineIdx + partIdx) * 0.13).toFixed(2) + "s";
+        lineDiv.appendChild(span);
+      } else {
+        lineDiv.appendChild(document.createTextNode(part));
+      }
+    });
+
+    frag.appendChild(lineDiv);
+    lineDivs.push(lineDiv);
+  });
+
+  bouquetEl.appendChild(frag);
+
+  const totalLines = lineDivs.length;
+  lineDivs.forEach((div, idx) => {
+    setTimeout(() => {
+      div.classList.add("visible");
+    }, (totalLines - idx) * 24);
+  });
+  // === 1. 3D-НАКЛОН ГОЛОГРАФИЧЕСКОЙ ОТКРЫТКИ ===
+  const mainWindow = document.getElementById("mainWindow");
+  const cardGlare = document.getElementById("cardGlare");
+
+  function handleTilt(clientX, clientY) {
+    const rect = mainWindow.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -4.5;
+    const rotateY = ((x - centerX) / centerX) * 4.5;
+
+    mainWindow.classList.add("tilting");
+    mainWindow.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    cardGlare.style.setProperty("--gx", ((x / rect.width) * 100).toFixed(1) + "%");
+    cardGlare.style.setProperty("--gy", ((y / rect.height) * 100).toFixed(1) + "%");
+  }
+
+  function resetTilt() {
+    mainWindow.classList.remove("tilting");
+    mainWindow.style.transform = "rotateX(0deg) rotateY(0deg)";
+  }
+
+  mainWindow.addEventListener("mousemove", (e) => handleTilt(e.clientX, e.clientY));
+  mainWindow.addEventListener("mouseleave", resetTilt);
+  mainWindow.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 0) {
+      handleTilt(e.touches.item(0).clientX, e.touches.item(0).clientY);
+    }
+  }, { passive: true });
+  mainWindow.addEventListener("touchend", resetTilt);
+
+  // === 2. ПЕРЕКЛЮЧАТЕЛЬ ЦВЕТОВЫХ ТЕМ ===
+  const themeDots = document.querySelectorAll(".theme-dot");
+  themeDots.forEach(dot => {
+    dot.addEventListener("click", () => {
+      themeDots.forEach(d => d.classList.remove("active"));
+      dot.classList.add("active");
+      document.body.className = "";
+      const theme = dot.getAttribute("data-theme");
+      if (theme !== "pink") {
+        document.body.classList.add("theme-" + theme);
+      }
+    });
+  });
+
+  // === 3. ДОЖДЬ ИЗ СЕРДЕЧЕК ПРИ ВСТРЯХИВАНИИ (IPHONE + ANDROID) ===
+  const heartSymbols = ["♥", "✦", "<3", "❀", "♥", "✧", "♥"];
+  const heartColors = ["#ff6eb4", "#ffd43b", "#ff4757", "#c084fc", "#55efc4"];
+  let lastRainTime = 0;
+  let motionGranted = false;
+
+  function triggerHeartRain() {
+    const now = Date.now();
+    if (now - lastRainTime < 1500) return;
+    lastRainTime = now;
+
+    for (let i = 0; i < 24; i++) {
+      const h = document.createElement("span");
+      h.className = "rain-heart";
+      h.textContent = heartSymbols.at(i % heartSymbols.length);
+      h.style.color = heartColors.at(i % heartColors.length);
+      h.style.fontSize = (12 + (i % 4) * 3) + "px";
+      h.style.left = (Math.random() * 94 + 3).toFixed(1) + "vw";
+      h.style.setProperty("--sway", (Math.random() * 50 - 25).toFixed(0) + "px");
+      const dur = (1.8 + Math.random() * 1.4).toFixed(2);
+      const delay = (Math.random() * 0.6).toFixed(2);
+      h.style.animationDuration = dur + "s";
+      h.style.animationDelay = delay + "s";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), (parseFloat(dur) + parseFloat(delay)) * 1000 + 100);
+    }
+  }
+
+  function requestIOSMotion() {
+    if (motionGranted) return;
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+      DeviceMotionEvent.requestPermission().then(state => {
+        if (state === "granted") motionGranted = true;
+      }).catch(() => {});
+    } else {
+      motionGranted = true;
+    }
+  }
+
+  document.getElementById("rainBtn").addEventListener("click", () => {
+    requestIOSMotion();
+    triggerHeartRain();
+  });
+
+  document.body.addEventListener("touchstart", requestIOSMotion, { once: true, passive: true });
+
+  let lastX = null, lastY = null, lastZ = null;
+  window.addEventListener("devicemotion", (e) => {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc || acc.x === null) return;
+    if (lastX !== null) {
+      const delta = Math.abs(acc.x - lastX) + Math.abs(acc.y - lastY) + Math.abs(acc.z - lastZ);
+      if (delta > 28) {
+        triggerHeartRain();
+      }
+    }
+    lastX = acc.x;
+    lastY = acc.y;
+    lastZ = acc.z;
+  }, { passive: true });
+
+  // === 4. ВЕЕРНЫЕ СЕРДЕЧКИ ПРИ НАЖАТИИ НА БУКЕТ ===
+  const bouquetWrap = document.getElementById("bouquetWrap");
+  bouquetWrap.addEventListener("click", (e) => {
+    requestIOSMotion();
+    bouquetWrap.classList.remove("pulse");
+    void bouquetWrap.offsetWidth;
+    bouquetWrap.classList.add("pulse");
+    setTimeout(() => bouquetWrap.classList.remove("pulse"), 280);
+
+    const x = e.clientX || window.innerWidth / 2;
+    const y = e.clientY || 220;
+    const count = 7;
+
+    for (let i = 0; i < count; i++) {
+      const h = document.createElement("span");
+      h.className = "tap-heart";
+      h.textContent = heartSymbols.at(i % heartSymbols.length);
+      h.style.color = heartColors.at(i % heartColors.length);
+      h.style.fontSize = (13 + (i % 3) * 3) + "px";
+      h.style.left = x + "px";
+      h.style.top = y + "px";
+
+      const angle = -Math.PI / 2 + ((i - (count - 1) / 2) * 0.34);
+      const dist = 65 + (i % 2) * 28;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 15;
+      const rot = ((i - 3) * 14) + "deg";
+
+      h.style.setProperty("--dx", dx.toFixed(1) + "px");
+      h.style.setProperty("--dy", dy.toFixed(1) + "px");
+      h.style.setProperty("--rot", rot);
+
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1260);
+    }
+  });
+
+  // === 5. ДРУЖЕСКАЯ СЕКРЕТНАЯ ЗАПИСКА ===
+  const secretMessage = "Лиза, лови цифровой букет, который точно не завянет! Спасибо за крутой вайб и настроение, оставайся такой же классной ✨";
+  const noteBtn = document.getElementById("noteBtn");
+  const secretNote = document.getElementById("secretNote");
+  let noteOpen = false;
+  let typeTimer = null;
+
+  noteBtn.addEventListener("click", () => {
+    requestIOSMotion();
+    noteOpen = !noteOpen;
+    if (noteOpen) {
+      noteBtn.textContent = "✕ Закрыть записку";
+      secretNote.classList.add("open");
+      secretNote.textContent = "";
+      let idx = 0;
+      if (typeTimer) clearInterval(typeTimer);
+      typeTimer = setInterval(() => {
+        if (idx < secretMessage.length) {
+          secretNote.textContent += secretMessage.charAt(idx);
+          idx++;
+        } else {
+          clearInterval(typeTimer);
+        }
+      }, 28);
+    } else {
+      noteBtn.textContent = "✉ Открыть записку";
+      secretNote.classList.remove("open");
+      if (typeTimer) clearInterval(typeTimer);
+    }
+  });
+
+  // === 6. ПЛЕЕР С 60 FPS ПОЛОСКОЙ И СКРЫТИЕМ ДО НАЖАТИЯ ===
+  const lyricLines = document.querySelectorAll(".lyric-line");
+  const audio = document.getElementById("bgMusic");
+  const playBtn = document.getElementById("playBtn");
+  const eqBars = document.getElementById("eqBars");
+  const playerBox = document.getElementById("playerBox");
+  const progressFill = document.getElementById("progressFill");
+  const trackTitle = document.getElementById("trackTitle");
+  const trackArtist = document.getElementById("trackArtist");
+  let isPlaying = false;
+  let rafId = null;
+
+  const customTimings = null;
+
+  function highlightLine(index) {
+    lyricLines.forEach((el, idx) => {
+      if (idx === index) {
+        el.classList.add("active");
+      } else {
+        el.classList.remove("active");
+      }
+    });
+  }
+
+  function updateProgressLoop() {
+    if (!isPlaying) return;
+    const t = audio.currentTime;
+    const duration = audio.duration;
+
+    if (duration && isFinite(duration)) {
+      const ratio = Math.min(Math.max(t / duration, 0), 1);
+      progressFill.style.transform = "scaleX(" + ratio.toFixed(4) + ")";
+
+      let activeIdx = 0;
+      if (Array.isArray(customTimings) && customTimings.length === lyricLines.length) {
+        for (let i = 0; i < customTimings.length; i++) {
+          if (t >= customTimings.at(i)) {
+            activeIdx = i;
+          }
+        }
+      } else {
+        const partLength = duration / lyricLines.length;
+        activeIdx = Math.min(Math.floor(t / partLength), lyricLines.length - 1);
+      }
+      highlightLine(activeIdx);
+    }
+
+    rafId = requestAnimationFrame(updateProgressLoop);
+  }
+
+  function setPlayingState(active) {
+    isPlaying = active;
+    if (active) {
+      playBtn.textContent = "❚❚ Пауза";
+      trackTitle.textContent = "cabbage (feat. Ulysse)";
+      trackArtist.textContent = "урал гайсин";
+      eqBars.classList.add("playing");
+      playerBox.classList.add("active-music");
+      rafId = requestAnimationFrame(updateProgressLoop);
+    } else {
+      playBtn.textContent = "▶ Включить";
+      trackTitle.textContent = "Секретный трек";
+      trackArtist.textContent = "Нажми, чтобы включить";
+      eqBars.classList.remove("playing");
+      playerBox.classList.remove("active-music");
+      if (rafId) cancelAnimationFrame(rafId);
+      progressFill.style.transform = "scaleX(0)";
+      highlightLine(0);
+    }
+  }
+
+  playBtn.addEventListener("click", () => {
+    requestIOSMotion();
+    if (!isPlaying) {
+      audio.play().then(() => {
+        setPlayingState(true);
+      }).catch(() => {
+        alert("Загрузите файл cabbage.mp3 в репозиторий на GitHub, чтобы играл звук и раскрылся трек!");
+      });
+    } else {
+      audio.pause();
+      setPlayingState(false);
+    }
+  });
+
+  audio.addEventListener("ended", () => {
+    audio.currentTime = 0;
+    setPlayingState(false);
+  });
+
+  const particlesContainer = document.getElementById("particles");
+  const symbols = ["0", "1", "*", "✦"];
+  const colors = ["#ff6eb4", "#ffd43b", "#c084fc", "#7bed9f"];
+
+  for (let i = 0; i < 10; i++) {
+    const p = document.createElement("span");
+    p.className = "particle";
+    p.textContent = symbols[i % symbols.length];
+    p.style.left = (i * 10 + 4) + "vw";
+    p.style.color = colors[i % colors.length];
+    p.style.fontSize = "12px";
+    p.style.animationDuration = (8 + (i % 5) * 2) + "s";
+    p.style.animationDelay = (i * 0.7) + "s";
+    particlesContainer.appendChild(p);
+  }
+</script>
+
+</body>
+</html>
